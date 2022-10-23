@@ -13,7 +13,7 @@
 
 ## Imagine we start to create similar Python scripts and need to deploy/execute those as well. How would you keep this setup DRY and empower developers to provision on their own?
 - In case of needing to provisioning infrastructure for each script as we develop them, I think we can make terraform more modular. For example, the basic set up (vpc, subnets, security groups, etcs) can be reused to provision a new infrastructure/ec2-instance. Regardless, we should try to keep terraform modular (with moderation so that we can still read and understand it) to automate our workflow.
-- Thus, setting up the infratrucutre CI/CD should developers to provision as they wish.
+- Thus, setting up the infratrucutre CI/CD should allow developers to provision as they wish.
 
 
 # Run this terraform 
