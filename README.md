@@ -1,18 +1,19 @@
 
 # Questions
 ## Imagine the Python script needed credentials to connect to the CMS database and spreadsheet. What are some security best practices you would consider?
-- One solution is to use cloud service infrastructure itself. Example, give an appropriate access to the ec2-instance and the script runner environment so that it can access aws secrets manager.
+- One solution is to use cloud service infrastructure itself. For example, we can save credentials to aws secret manager. Then, give an appropriate access to the ec2-instance and the script runner environment so that it can access aws secrets manager. Python can use boto3 to access aws secrets manager.
+- Other security measures:
 - We can also restrict who can access the database, e.g. restrict ip address.
 - Keep the database in private sub network.
 - Scan the terraform infratructure for security and address them as per team discussion.
 
 ## In your ideal setup, how would changes to the Python script or terraform code be deployed?
-- Ideally, I would set up CI/CD for both. First, I would like to keep infrastructure repo seperate from python script repo. Second, even for infrastructure repo, I would want to treat them as a regular work flow, e.g. peer review and merging.
-- Second, depending upon the need, we can register the runner (for the repo) in a given ec2 instance and then set up CI/CD flow. Thus, as changes occur we can test and deploy them.
+- Ideally, I would set up CI/CD for both. First, I would like to keep infrastructure repo seperate from python script repo. Second, even for infrastructure repo, I would want to treat them as a regular work flow, e.g. peer review and merging. The workflow can be broken into stages, e.g. plan apply -> apply. Additionally, GitHub Actions (or, other source control platforms) seems to have well integrated workflows and we can leverage that.
+- Second, depending upon the need to run a script, we can register the runner (for the repo) in a provisioned ec2 instance and set up CI/CD flow. Thus, as changes occur we can test and deploy them.
 
 ## Imagine we start to create similar Python scripts and need to deploy/execute those as well. How would you keep this setup DRY and empower developers to provision on their own?
 - In case of needing to provisioning infrastructure for each script as we develop them, I think we can make terraform more modular. For example, the basic set up (vpc, subnets, security groups, etcs) can be reused to provision a new infrastructure/ec2-instance. Regardless, we should try to keep terraform modular (with moderation so that we can still read and understand it) to automate our workflow.
-- In another words, develop/build terraform in a way that developer can invoke an infrastructure just with a bash commond. 
+- Thus, setting up the infratrucutre CI/CD should developers to provision as they wish.
 
 
 # Run this terraform 
@@ -50,5 +51,3 @@
 
 ### Add a monitoring tool using terraform
 - `https://docs.datadoghq.com/integrations/guide/aws-terraform-setup/`
-
-### Tests done only on dev environment.
