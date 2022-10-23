@@ -11,6 +11,7 @@ data "aws_availability_zones" "available" {
 resource "aws_vpc" "test_vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
+  # instance_tenancy               = var.tenancy
 
   tags = {
     Name = "test-vpc"
@@ -75,7 +76,7 @@ resource "aws_subnet" "public_subnet" {
 resource "aws_subnet" "private_subnet" {
   count                   = var.private_subnet_count
   vpc_id                  = aws_vpc.test_vpc.id
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   cidr_block           = cidrsubnet(var.vpc_cidr, 8, count.index + 4)
   availability_zone_id = data.aws_availability_zones.available.zone_ids[count.index % length(data.aws_availability_zones.available.zone_ids)]
@@ -114,31 +115,34 @@ resource "aws_route_table_association" "public-rt" {
   route_table_id = aws_route_table.testvpc_public_rt.id
 }
 
+#NAT costs money
 #Route table private
-resource "aws_route_table" "testvpc_private_rt" {
-  vpc_id = aws_vpc.test_vpc.id
+# resource "aws_route_table" "testvpc_private_rt" {
+#   vpc_id = aws_vpc.test_vpc.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-  }
+#    route {
+#     cidr_block = var.vpc_cidr
+#     gateway_id = aws_nat_gateway.test_nat.id
+#   }
 
-  tags = {
-    Name = "Public subnet RT"
-  }
-}
+#   tags = {
+#     Name = "Private subnet RT"
+#   }
+# }
 
-#Assign RT to private subnet
-resource "aws_route_table_association" "private-rt" {
-  count          = var.public_subnet_count
-  subnet_id      = aws_subnet.private_subnet[count.index].id
-  route_table_id = aws_route_table.testvpc_private_rt.id
-}
+# #Assign RT to private subnet
+# resource "aws_route_table_association" "private-rt" {
+#   count          = var.public_subnet_count
+#   subnet_id      = aws_subnet.private_subnet[count.index].id
+#   route_table_id = aws_route_table.testvpc_private_rt.id
+# }
 
-#NAT gateway
-resource "aws_nat_gateway" "test-nat" {
-  subnet_id = aws_subnet.public_subnet[0].id
+# #NAT gateway
+# resource "aws_nat_gateway" "test_nat" {
+#   subnet_id = aws_subnet.public_subnet[0].id
+#   connectivity_type = "private"
 
-  tags = {
-    Name = "gw NAT"
-  }
-}
+#   tags = {
+#     Name = "gw NAT"
+#   }
+# }

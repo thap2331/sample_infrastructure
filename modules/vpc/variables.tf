@@ -17,3 +17,7 @@ variable "private_subnet_count" {
   description = "Number of public subnets"
   default     = 1
 }
+
+variable "tenancy" {
+  default = "dedicated"
+}
